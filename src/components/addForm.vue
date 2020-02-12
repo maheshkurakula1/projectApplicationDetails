@@ -1,7 +1,7 @@
 <template>
   <div id="addForm">
     <h2>Add Task</h2>
-        <form @submit.prevent="handleSubmit()">
+        <form @submit.prevent="handleSubmit(data)">
             <label>Project</label>
             <input type='text' v-model="data.projectName" required /><br>
             <label>Application Name</label>
@@ -16,7 +16,8 @@
 </template>
 
 <script>
-    let apiEndPoint = 'http://localhost:3003/sampleRoute'
+    import fetch from 'isomorphic-unfetch'
+    let apiEndPoint = 'http://localhost:8007/inserProjectAndApplication'
     export default{
         data(){
             return{
@@ -29,15 +30,35 @@
             }
         },
         methods:{
-            handleSubmit(){
-                console.log(this.data,this.$http,"====")
-                this.$http.post(apiEndPoint, this.data)
-                .then(resp => {
-                    console.log(resp,"")
+            handleSubmit(data){
+                console.log(data)
+                let payload = {
+                    project_name: data.projectName,
+                    application_name: data.applicationName,
+                    project_id: data.projectId,
+                    application_id: data.applicationId
+                }
+                fetch(apiEndPoint,{
+                    method: 'POST',
+                    body: JSON.stringify(payload),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
                 })
-                .catch(err =>{
-                    console.log(err)
+                .then((res) => {
+                    console.log(res.body,"working")
                 })
+                .catch((err) => {
+                    console.log(err, "error ")
+                })
+                console.log("====")
+                // this.$http.post(apiEndPoint, this.data)
+                // .then(resp => {
+                //     console.log(resp,"")
+                // })
+                // .catch(err =>{
+                //     console.log(err)
+                // })
             }
         }
     }

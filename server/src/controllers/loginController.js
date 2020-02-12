@@ -1,16 +1,43 @@
+let projectAndAppModel = require('./../models/projectAndApplicationsModel').projectAndApplications
 
-
-exports.loginPage = (req, res, cb) => {
-    console.log("HI")
-}
-
-exports.paymentTypes = function(req, res, cb){
+exports.inserProjectAndApplication = function(req, res, cb){
+    console.log(req.body, "functioreq. call")
+    projectAndAppModel.create({
+        application_id: req.body.application_id,
+        application_name: req.body.application_name,
+        project_id: req.body.project_id,
+        project_name: req.body.project_name
+    })
+    .then(result => {
+        console.log(result)
+        res.send({
+            status: "true",
+            data: result
+        })
+    })
+    .catch(err => {
+        console.log(err)
+        res.send({
+            status: "false",
+            data: {'aasd':'dfgfgdds'}
+        })
+    })
     
 }
 
-exports.outletSale = function(req, res, cb){
-    
-}
-
-exports.sampleInsert = function(req, res, cb){
+exports.getProjectAndApplications = function(req, res, cb){
+    projectAndAppModel.findAll()
+    .then(result => {
+        res.send({
+            status: true,
+            data: result
+        })
+    })
+    .catch(err => {
+        console.log(err)
+        res.send({
+            status: false,
+            data: {}
+        })
+    })
 }
