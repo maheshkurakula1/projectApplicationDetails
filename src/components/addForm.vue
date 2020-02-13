@@ -1,7 +1,8 @@
 <template>
+<div>
   <div id="addForm">
     <h2>Add Task</h2>
-        <form @submit.prevent="handleSubmit(data)">
+        <form id="addDetailsForm" @submit.prevent="handleSubmit">
             <label>Project</label>
             <input type='text' v-model="data.projectName" required /><br>
             <label>Application Name</label>
@@ -13,14 +14,29 @@
             <button type='submit'>Submit</button>
         </form>
   </div>
+  <div id="builds">
+      <b-table striped hover :items="items"></b-table>
+  </div>
+</div>
 </template>
 
 <script>
     import fetch from 'isomorphic-unfetch'
-    let apiEndPoint = 'http://localhost:8007/inserProjectAndApplication'
+    let postApplicationDetails = 'http://localhost:8007/inserProjectAndApplication'
+    let getApplicationDetails = 'http://localhost:8007/getProjectAndApplications'
     export default{
+        mounted(){
+            this.getProjectData()
+        },
         data(){
             return{
+                items: [{
+                        'Application Id' : '',
+                        'Application Name': '',
+                        'Project Id': '',
+                        'Project Name': '',
+                        "Create Job": ''
+                    }],
                 data:{
                     projectName: '',
                     applicationName: '',
@@ -30,15 +46,43 @@
             }
         },
         methods:{
-            handleSubmit(data){
-                console.log(data)
+            getProjectData(){
+                fetch(getApplicationDetails)
+                .then((response) =>{
+                    response.json()
+                    .then(data => {
+                        console.log(data,"final")
+                        let table_data = []
+                        if(data.data.length != 0){
+                            data.data.forEach(element => {
+                                let temp_obj = {
+                                    'Application Id' : element.application_id,
+                                    'Application Name': element.application_name,
+                                    'Project Id': element.project_id,
+                                    'Project Name': element.project_name,
+                                    "Create Job": `<button id ="create_job">Create</button>`
+                                }
+                                table_data.push(temp_obj)
+                            });
+                            this.items = table_data
+                        }
+                        
+                    })
+                })
+                .catch((err)=>{
+                    console.log(err)
+                })
+            },
+            handleSubmit: function(event){
+                
+                console.log(this.data,"dataaaaa")
                 let payload = {
-                    project_name: data.projectName,
-                    application_name: data.applicationName,
-                    project_id: data.projectId,
-                    application_id: data.applicationId
+                    project_name: this.data.projectName,
+                    application_name: this.data.applicationName,
+                    project_id: this.data.projectId,
+                    application_id: this.data.applicationId
                 }
-                fetch(apiEndPoint,{
+                fetch(postApplicationDetails,{
                     method: 'POST',
                     body: JSON.stringify(payload),
                     headers: {
@@ -47,6 +91,11 @@
                 })
                 .then((res) => {
                     console.log(res.body,"working")
+                    this.data.projectName = ''
+                    this.data.applicationName = ''
+                    this.data.projectId = ''
+                    this.data.applicationId = ''
+                    this.getProjectData()
                 })
                 .catch((err) => {
                     console.log(err, "error ")
