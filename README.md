@@ -34,5 +34,6 @@ For detailed explanation on how things work, consult the [docs for vue-loader](h
     1. `cd server` (to enter into backend).
     2. `npm insatll` (for dependencies).
     3. edit .env file in servers and set database credentials.
-    4. `sequelize db:migrate` (this command automatically creates a table in db)
-    5. node app.js (run the server)
+    4. edit database credentials in server/config/config.json
+    5. `sequelize db:migrate` (this command automatically creates a table in db)
+    6. node app.js (run the server)
